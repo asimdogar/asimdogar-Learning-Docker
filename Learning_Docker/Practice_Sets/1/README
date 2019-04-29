@@ -1,0 +1,46 @@
+First Alpine Linux Containers
+Open Lab : https://labs.play-with-docker.com/#
+1.0 Running your first container
+
+$ docker container run hello-world
+
+1.1 Docker Images
+Alpine is a lightweight Linux distribution so it is quick to pull down and run, making it a popular starting point for many other images.
+
+$ docker image pull alpine
+$ docker image ls
+
+1.1 Docker Container Run
+
+$ docker container run alpine ls -l
+
+$ docker container run alpine echo "hello from alpine"
+
+$ docker container ls
+$ docker container ls -a
+
+1.2 Container Isolation
+
+$ docker container run -it alpine /bin/ash
+
+echo "hello world" > hello.txt
+
+ ls
+
+$ docker container run alpine ls
+
+
+$ docker container start <container ID>
+
+$ docker container exec <container ID> ls
+
+1.3 Terminology
+
+
+    Images - The file system and configuration of our application which are used to create containers.
+    Containers - Running instances of Docker images — containers run the actual applications.
+
+    Docker daemon - The background service running on the host that manages building, running and distributing Docker containers.
+    Docker client - The command line tool that allows the user to interact with the Docker daemon.
+    Docker Store - Store is, among other things, a registry of Docker images. You can think of the registry as a directory of all available Docker images. You’ll be using this later in this tutorial.
+

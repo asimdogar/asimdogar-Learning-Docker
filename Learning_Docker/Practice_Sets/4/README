@@ -1,0 +1,118 @@
+
+Ignoring Files
+
+In this scenario, we'll explore how you can ignore certain files from ending up inside a Docker image that can introduce security risks. This scenario also investigates how you can reduce the build time by ignoring which files are sent to the Docker Build Context.
+
+$ docker build -t password .
+
+this will include all files in docker build.
+
+
+$ docker run password ls /app
+
+Now ignore a file
+
+echo password.txt >> .dockerignore
+
+$ docker build -t nopassword .
+
+Look at the output using docker run nopassword ls /app
+
+they can also be used to improve the build time of images.
+
+ 100M temporary file has been created. This file is never used by the Dockerfile. When you execute a build command, Docker sends the entire path contents to the Engine for it to calculate which files to include. As a result sending the 100M file is unrequired and creates a slower build.
+
+$ docker build -t large-file-context .
+
+echo largefile.txt >> .dockerignore
+
+When we rebuild the image, it will be much faster as it doesn't have to copy the 100M file.
+
+docker build -t no-large-file-context .
+
+Communicating Between Containers
+
+This scenario explores how to allow multiple containers to communicate with each other. The steps will explain how to connect a data-store, in this case, Redis, to an application running in a separate container.
+
+
+Start Data Store
+Run a redis server with a friendly name of redis-server which we'll connect to in the next step. This will be our source container.
+
+
+$ docker run -d --name redis-server redis
+
+
+$ docker run --link redis-server:redis alpine env
+
+
+$ docker run --link redis-server:redis alpine cat /etc/hosts
+
+$ docker run --link redis-server:redis alpine ping -c 1 redis
+
+$ docker run -d -p 3000:3000 --link redis-server:redis katacoda/redis-node-docker-example
+
+If sever address is changes the link will break , it might be due to server restart.
+
+Launching Redis CLI
+The command below will launch an instance of the Redis-cli tool and connect to the redis server via its alias.
+
+docker run -it --link redis-server:redis redis redis-cli -h redis
+
+Issuing Commands
+The command KEYS * will output the contents stored currently in the source redis container.
+
+Create Network
+
+$ docker network create backend-network
+
+$ sudo docker network ls
+
+$ docker run -d --name=redis --net=backend-network redis
+
+$ docker run --net=backend-network alpine env
+
+$ docker run --net=backend-network alpine cat /etc/hosts
+
+Instead, the way containers can communicate via an Embedded DNS Server in Docker. This DNS server is assigned to all containers via the IP 127.0.0.11 and set in the resolv.conf file.
+
+$ docker run --net=backend-network alpine cat /etc/resolv.conf
+
+When containers attempt to access other containers via a well-known name, such as Redis, the DNS server will return the IP address of the correct Container.
+
+$ docker run --net=backend-network alpine ping -c1 redis
+
+
+let's create a separate network with a Node.js application that communicates with our existing Redis instance.
+
+$ docker network create frontend-network
+
+$ docker network connect frontend-network redis
+
+$ docker run -d -p 3000:3000 --net=frontend-network katacoda/redis-node-docker-example
+
+
+Connect Container with Alias
+The following command will connect our Redis instance to the frontend-network with the alias of db.
+
+$ docker network create frontend-network2
+$ docker network connect --alias db frontend-network2 redis
+
+When containers attempt to access a service via the name db, they will be given the IP address of our Redis container.
+
+$ docker run --net=frontend-network2 alpine ping -c1 db
+
+
+The following command will list all the networks on our host.
+
+docker network ls
+
+We can then explore the network to see which containers are attached and their IP addresses.
+
+docker network inspect frontend-network
+
+The following command disconnects the redis container from the frontend-network.
+
+docker network disconnect frontend-network redis
+
+
+

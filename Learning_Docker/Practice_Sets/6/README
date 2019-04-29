@@ -1,0 +1,50 @@
+Swarm Mode Introduction for IT Pros
+Production applications are usually much more complex and this single server model will not work to coordinate 10s or 100s of containers and the network connections amongst them, not to mention the need to ensure availability and the ability to scale.
+
+For real applications IT users and app teams need more sophisticated tools. Docker supplies two such tools: Docker Compose and Docker Swarm Mode. The two tools have some similarities but some important differences:
+
+    Compose is used to control multiple containers on a single system. Much like the Dockerfile we looked at to build an image, there is a text file that describes the application: which images to use, how many instances, the network connections, etc. But Compose only runs on a single system.
+
+	1. Your first docker-compose.yml file
+	2. Run your new load-balanced app
+			$ docker swarm init
+			$ docker stack deploy -c docker-compose.yml getstartedlab
+			$ docker service ls
+			$ docker service ps getstartedlab_web
+			$ docker stack ps getstartedlab
+
+			Take down the app and the swarm
+
+   		 	Take the app down with docker stack rm:
+
+    			docker stack rm getstartedlab
+
+    			Take down the swarm.
+
+    			docker swarm leave --force
+
+
+Compose is used to control multiple containers on a single system. Much like the Dockerfile we looked at to build an image, there is a text file that describes the application: which images to use, how many instances, the network connections, etc. But Compose only runs on a single system so while it is useful, we are going to skip Compose1 and go straight to Docker Swarm Mode.
+
+    Swarm Mode tells Docker that you will be running many Docker engines and you want to coordinate operations across all of them. Swarm mode combines the ability to not only define the application architecture, like Compose, but to define and maintain high availability levels, scaling, load balancing, and more. With all this functionality, Swarm mode is used more often in production environments than it’s more simplistic cousin, Compose.
+
+
+	Initialize Your Swarm
+		$ docker swarm init --advertise-addr $(hostname -i)
+		$ Show Swarm Members
+
+		From the first terminal window, check the number of nodes in the swarm (running 		this command from the second terminal worker node will fail as swarm related 			commands need to be issued against a swarm manager).
+
+		$ docker node ls
+
+Clone the Voting App
+
+Now to do something interesting we will retrieve the sample voting app code from Github.
+
+Ensure you are in the first terminal - the manager - and enter the following two commands:
+
+git clone https://github.com/docker/example-voting-app
+cd example-voting-app
+
+
+More : https://training.play-with-docker.com/ops-s1-swarm-intro/

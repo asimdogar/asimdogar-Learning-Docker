@@ -1,0 +1,18 @@
+Docker Volumes
+
+In this scenario, you'll learn how to use Docker Volumes to persistent data within Containers. Docker Volumes allow directories to be shared between containers and container versions.
+
+Share the host Data to containers 
+
+$ mkdir example
+
+$ sudo docker run -ti -v /home/asim/example:/shared-folder ubuntu bash
+
+
+Sharing data between Containers emphirial (when last container exited the data goes away)
+
+$ sudo docker run -ti -v /shared-folder ubuntu bash
+
+$ sudo docker ps
+
+$ sudo docker run -ti --volumes-from dazzling_poincare ubuntu bash
