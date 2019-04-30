@@ -16,3 +16,15 @@ $ sudo docker run -ti -v /shared-folder ubuntu bash
 $ sudo docker ps
 
 $ sudo docker run -ti --volumes-from dazzling_poincare ubuntu bash
+
+$ docker export dataContainer > dataContainer.tar
+
+The command docker import dataContainer.tar
+
+---------------------
+Managing Log Files
+----------------------
+
+This scenario will explore the different ways you can handle logging output from your application and services when running as containers.
+
+$ docker logs redis-server
